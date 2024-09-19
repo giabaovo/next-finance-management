@@ -2,11 +2,13 @@
 
 import NavButton from "@/components/nav-button";
 import {usePathname, useRouter} from "next/navigation";
-import {useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useMedia} from "react-use";
 import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet";
 import {Button} from "@/components/ui/button";
 import {Menu} from "lucide-react";
+import {setToken} from "@/features/tokens/api/set-tokens";
+import {useOnceRender} from "@/features/common/use-once-render";
 
 const routes = [
     {
@@ -31,7 +33,14 @@ const routes = [
     },
 ]
 
-const Navigation = () => {
+type NavigationProps = {
+    token: {
+        access: string,
+        refresh: string
+    }
+}
+
+const Navigation = ({token}: NavigationProps) => {
 
     const [isOpen, setIsOpen] = useState(false)
 
@@ -41,15 +50,24 @@ const Navigation = () => {
 
     const isMobile = useMedia('(max-width: 1024px)', false)
 
+    const { isRender, setIsRender } = useOnceRender()
+
     const onClick = (href: string) => {
         router.push(href)
         setIsOpen(false)
     }
 
+    useEffect(() => {
+        setIsRender()
+        if (isRender) {
+            setToken(token)
+        }
+    }, [isRender]);
+
     if (isMobile) {
         return (
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                <SheetTrigger>
+                <SheetTrigger asChild>
                     <Button
                         variant="outline"
                         size="sm"

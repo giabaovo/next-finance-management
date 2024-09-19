@@ -1,14 +1,17 @@
 import React from "react";
 import Header from "@/components/header";
+import {getToken} from "@/features/tokens/api/get-tokens";
+
 
 type Props = {
     children: React.ReactNode
 }
 
-const DashboardLayout = ({children}: Props) => {
+const DashboardLayout = async ({children}: Props) => {
+    const token = await getToken()
     return (
         <>
-            <Header/>
+            <Header token={token}/>
             <main className="px-3 lg:px-14">
                 {children}
             </main>
