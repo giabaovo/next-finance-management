@@ -8,25 +8,20 @@ type ResponseType = {
 } | {
     data: {
         id: string
-        plaidId: string | null
-        name: string
-        userId: string
-    }
+    }[]
 }
 
 type RequestType = {
-    values: {
-        name: string
-    }
+    ids: string[]
 }
 
-export const useCreateAccount = () => {
+export const useBulkDeleteAccounts = () => {
     const queryClient = useQueryClient()
 
-    const mutation = useMutation<ResponseType, Error,RequestType>({
+    const mutation = useMutation<ResponseType, Error, RequestType>({
         mutationFn: async (json) => {
             const token = await getTokenFromCookies()
-            const response: ResponseType = await apiClient.post("/account/", json, {
+            const response: ResponseType = await apiClient.post("/account/bulk-delete/", json, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -34,11 +29,11 @@ export const useCreateAccount = () => {
             return response
         },
         onSuccess: () => {
-            toast.success("Account created")
+            toast.success("Accounts deleted")
             queryClient.invalidateQueries({queryKey: ['accounts']})
         },
         onError: () => {
-            toast.error("Fail to create account")
+            toast.error("Fail to delete accounts")
         }
     })
 
