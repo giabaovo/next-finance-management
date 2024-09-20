@@ -17,3 +17,8 @@ export const setToken = async (token: { access: string, refresh: string }) => {
         path: '/'
     })
 }
+
+export const getTokenFromCookies = async () => {
+    const accessToken = cookies().get('access_token')?.value
+    return accessToken ? accessToken : null
+}

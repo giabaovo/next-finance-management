@@ -3,30 +3,13 @@ import apiClient from "@/features/common/api-client";
 import {toast} from "sonner";
 import {getTokenFromCookies} from "@/features/tokens/api/set-tokens";
 
-type ResponseType = {
-    error: string
-} | {
-    data: {
-        id: string
-        plaidId: string | null
-        name: string
-        userId: string
-    }
-}
-
-type RequestType = {
-    values: {
-        name: string
-    }
-}
-
-export const useCreateAccount = () => {
+export const useDeleteAccount = (id?: string) => {
     const queryClient = useQueryClient()
 
-    const mutation = useMutation<ResponseType, Error,RequestType>({
-        mutationFn: async (json) => {
+    const mutation = useMutation({
+        mutationFn: async () => {
             const token = await getTokenFromCookies()
-            const response: ResponseType = await apiClient.post("/account/", json, {
+            const response: ResponseType = await apiClient.delete(`/account/${id}/`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -34,11 +17,12 @@ export const useCreateAccount = () => {
             return response
         },
         onSuccess: () => {
-            toast.success("Account created")
+            toast.success("Account deleted")
+            queryClient.invalidateQueries({queryKey: ['account', {id}]})
             queryClient.invalidateQueries({queryKey: ['accounts']})
         },
         onError: () => {
-            toast.error("Fail to create account")
+            toast.error("Fail to delete account")
         }
     })
 

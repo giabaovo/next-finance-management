@@ -4,19 +4,19 @@ import {AccountForm} from "@/features/accounts/components/account-form";
 import {z} from "zod";
 import {useCreateAccount} from "@/features/accounts/api/use-create-account";
 
+const formSchema = z.object({
+    values: z.object({
+        name: z.string({
+            required_error: "Name is required"
+        })
+    })
+})
+
+type FormValues = z.input<typeof formSchema>
+
 export const NewAccountSheet = () => {
 
     const {isOpen, onClose} = useNewAccount()
-
-    const formSchema = z.object({
-        values: z.object({
-            name: z.string({
-                required_error: "Name is required"
-            })
-        })
-    })
-
-    type FormValues = z.input<typeof formSchema>
 
     const mutation = useCreateAccount()
 

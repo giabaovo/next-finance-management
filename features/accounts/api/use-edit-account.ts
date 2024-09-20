@@ -20,13 +20,13 @@ type RequestType = {
     }
 }
 
-export const useCreateAccount = () => {
+export const useEditAccount = (id?: string) => {
     const queryClient = useQueryClient()
 
     const mutation = useMutation<ResponseType, Error,RequestType>({
         mutationFn: async (json) => {
             const token = await getTokenFromCookies()
-            const response: ResponseType = await apiClient.post("/account/", json, {
+            const response: ResponseType = await apiClient.patch(`/account/${id}/`, json, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -34,11 +34,12 @@ export const useCreateAccount = () => {
             return response
         },
         onSuccess: () => {
-            toast.success("Account created")
+            toast.success("Account updated")
+            queryClient.invalidateQueries({queryKey: ['account', {id}]})
             queryClient.invalidateQueries({queryKey: ['accounts']})
         },
         onError: () => {
-            toast.error("Fail to create account")
+            toast.error("Fail to update account")
         }
     })
 
